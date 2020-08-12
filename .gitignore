@@ -1,0 +1,13 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*.RData
+*.rdb
+*.rdx
+*.Rproj
+TinyTeX.zip
+Simulation_exercise_cache/html/__packages
+Simulation_exercise_cache/latex/__packages
+Inferential_Data_analysis_cache/latex/__packages
+Inferential_Data_analysis_cache/html/__packages

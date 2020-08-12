@@ -1,0 +1,81 @@
+---
+title: 'Statistical Inference: Inferential Data Analysis'
+subtitle: Michel Klein
+output:
+  pdf_document: default
+  html_document:
+    keep_md: yes
+---
+## Overview
+
+In this project, I will perform some basic exploratory data analyses on the ToothGrowth data. Then, I will use confidence intervals to compare tooth growth by supplement type and dose.
+
+
+## Exploratory data analysis
+
+The data consists of 60 observations of 3 variables. The first variable is a numeric value "len", corresponding to the length of odontoblasts, with minimum value of 4.20, maximum value of 33.9 and mean value 18.81. The second variable is "supp", consisting on factors with two levels: OJ (orange juice) and VC (ascorbic acid), with 30 observations each. The third variable is "dose", with minimum value of 0.5, maximum value of 2.0 and mean value of 1.167. There are 20 observations for each of the dose levels: 0.5, 1 and 2 (mg/day).
+
+```{r cache = TRUE}
+
+library(datasets)
+data <- ToothGrowth
+dim(data)
+str(data)
+head(data)
+summary(data)
+table(data$dose)
+
+```
+
+When plotting the data divided by Supplement Type and dosage, there is evidence of difference between the means of odontoblasts length with the vitamin C dose. Difference between supplement type is not clear.
+
+```{r cache = TRUE}
+library(ggplot2)
+
+ggplot(ToothGrowth,aes(x=factor(dose),y=len,fill=factor(dose))) + 
+    geom_boxplot() +
+    facet_grid(.~supp, labeller = as_labeller(c("OJ" = "Orange Juice", "VC" = "Ascorbic Acid"))) +
+    scale_x_discrete("Dose (mg/day)") +   
+    scale_y_continuous("Odontoblast Length") +  
+    scale_fill_discrete(name="Dose (mg/day)") + 
+    ggtitle("Effect of Vitamin C Supplement Type and Dosage on Odontoblast Length")
+```
+
+
+
+## Use confidence intervals to compare tooth growth by supp and dose.
+
+#First hypothesis tested: There is no difference between the two supplement types (mean of the difference = 0)
+
+```{r}
+
+t.test(len ~ supp, paired = FALSE, alternative = "two.sided", var.equal = FALSE, data = data)
+
+```
+The p-value is higher than 5%, so we fail to reject the null hypothesis. That means there are no evidence of difference between supplements.
+
+
+#Second hypothesis tested: There is no difference between the doses 0.5 and 1 (mean of the difference = 0)
+
+```{r}
+dataHalfOne <- subset(data, dose %in% c(0.5, 1))
+t.test(len ~ dose, paired = FALSE, alternative = "two.sided", var.equal = FALSE, data = dataHalfOne)
+
+```
+The p-value is smaller than 5%, so we reject the null hypothesis. That means there are evidence of difference between vitamin C doses 0.5 and 1 mg/day. Also the negative confidence interval indicates that a higher dose presents a higher mean for the odontoblasts length.
+
+
+
+#Third hypothesis tested: There is no difference between the doses 1 and 2 (mean of the difference = 0)
+```{r}
+
+dataOneTwo <- subset(data, dose %in% c(1, 2))
+t.test(len ~ dose, paired = FALSE, alternative = "two.sided", var.equal = FALSE, data = dataOneTwo)
+
+```
+The p-value is smaller than 5%, so we reject the null hypothesis. That means there are evidence of difference between vitamin C doses 1 and 2 mg/day. Also the negative confidence interval indicates that a higher dose presents a higher mean for the odontoblasts length.
+
+
+## Conclusions
+
+There are no evidence of difference between the two supplement types. The data and the t-tests indicates a higher mean of odonoblasts length with a bigger vitamin-C dose.
